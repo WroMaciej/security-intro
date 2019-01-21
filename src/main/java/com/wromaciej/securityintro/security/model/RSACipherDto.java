@@ -17,6 +17,8 @@ public class RSACipherDto extends CipherDto {
 		this.privateKey = privateKey;
 		this.modulus = modulus;
 	}
+	
+
 
 	public BigInteger getPublicKey() {
 		return publicKey;
