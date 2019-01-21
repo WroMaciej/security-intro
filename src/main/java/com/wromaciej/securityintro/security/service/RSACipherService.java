@@ -1,45 +1,47 @@
 package com.wromaciej.securityintro.security.service;
 
-import java.math.BigInteger;
-import java.security.KeyPair;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.wromaciej.securityintro.security.model.AsymmetricKeys;
+import com.wromaciej.securityintro.security.model.AsymmetricKeysDto;
+import com.wromaciej.securityintro.security.model.CipherDto;
 
 @Service
 public final class RSACipherService<T, E> implements CipherService<T, E> {
 	
-	private final int keyBitLength;
-	
-	private KeyGenerator keyGenerator;
 
-	private final BigInteger publicKey;
-	private final BigInteger privateKey;
-	private final BigInteger modulus;
+	
+	private final KeyGenerator<AsymmetricKeysDto> keyGenerator;
+
+
 	
 	
 
 
-	public RSACipherService(int keyBitLength) {
+	public RSACipherService(@Autowired KeyGenerator<AsymmetricKeysDto> keyGenerator) {
 		super();
-		this.keyBitLength = keyBitLength;
-		AsymmetricKeys asymmetricKeys = keyGenerator.getAssymetricKeys(keyBitLength);
-		publicKey = asymmetricKeys.getPublicKey();
-		privateKey = asymmetricKeys.getPrivateKey();
-		modulus = asymmetricKeys.getModulus();
+		this.keyGenerator = keyGenerator;
+
 	}
 
+
 	@Override
-	public E toEncrypted( T decrypted ) {
+	public E toEncrypted( CipherDto cipherDto, T decrypted ) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+
+
+
+
+
 	@Override
-	public T toDecrypted( E encrypted ) {
+	public T toDecrypted( CipherDto cipherDto, E encrypted ) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
 
 }

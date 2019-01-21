@@ -2,7 +2,7 @@ package com.wromaciej.securityintro.security.model;
 
 import java.math.BigInteger;
 
-public class AsymmetricKeys {
+public class AsymmetricKeysDto {
 	
 	private final BigInteger publicKey;
 	
@@ -14,7 +14,7 @@ public class AsymmetricKeys {
 
 	
 
-	public AsymmetricKeys(BigInteger publicKey, BigInteger privateKey,
+	public AsymmetricKeysDto(BigInteger publicKey, BigInteger privateKey,
 			BigInteger modulus) {
 		super();
 		this.publicKey = publicKey;

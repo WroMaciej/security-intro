@@ -1,9 +1,7 @@
 package com.wromaciej.securityintro.security.service;
 
-import com.wromaciej.securityintro.security.model.AsymmetricKeys;
-
-public interface KeyGenerator {
+public interface KeyGenerator <T> {
 	
-	AsymmetricKeys getAssymetricKeys(int keyBitLength);
+	T getKey(int keyBitLength);
 
 }
