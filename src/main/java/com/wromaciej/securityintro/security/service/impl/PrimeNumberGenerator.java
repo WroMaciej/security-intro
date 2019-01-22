@@ -1,4 +1,4 @@
-package com.wromaciej.securityintro.security.service;
+package com.wromaciej.securityintro.security.service.impl;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
