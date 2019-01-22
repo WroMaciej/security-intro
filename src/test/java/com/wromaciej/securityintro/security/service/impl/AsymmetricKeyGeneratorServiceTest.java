@@ -20,7 +20,7 @@ public class AsymmetricKeyGeneratorServiceTest {
 	public void shouldGenerateRandomKey() {
 		//given
 		//when
-		AsymmetricKeysDto key = keyGenerator.getRandomKey(8);
+		AsymmetricKeysDto key = keyGenerator.getRandomKey(32);
 		//then
 		System.out.println(key);
 	

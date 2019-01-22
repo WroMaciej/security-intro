@@ -2,6 +2,7 @@ package com.wromaciej.securityintro.security.service.impl;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -24,7 +25,15 @@ public class AsymmetricKeyGeneratorService implements KeyGeneratorService<Asymme
 
 	@Override
 	public AsymmetricKeysDto getRandomKey( int keyBitLength ) {
-		List<BigInteger> primes = primeNumberGenerator.getTwoRandomBigPrimes(keyBitLength);
+		List<BigInteger> primes = new ArrayList<>();
+		
+		try {
+			primes = primeNumberGenerator
+					.getTwoRandomBigPrimes(keyBitLength / 2);
+		} catch (ArithmeticException e) {
+			throw new SecurityException("Too short key.");
+		}
+		
 
 		BigInteger prime1 = primes.get(0);
 		BigInteger prime2 = primes.get(1);
@@ -39,7 +48,7 @@ public class AsymmetricKeyGeneratorService implements KeyGeneratorService<Asymme
 		} while (!publicKey.gcd(phiFunction).equals(BigInteger.ONE));
 
 		BigInteger privateKey = getPrivateKey(publicKey, phiFunction);
-			
+
 		return new AsymmetricKeysDto(publicKey, privateKey, modulus);
 	}
 
@@ -64,18 +73,19 @@ public class AsymmetricKeyGeneratorService implements KeyGeneratorService<Asymme
 
 		return randomNumber;
 	}
-	
-	private BigInteger getPrivateKey(BigInteger publicKey, BigInteger phiFunction) {
+
+	private BigInteger getPrivateKey( BigInteger publicKey, BigInteger phiFunction ) {
 		BigInteger privateKey = phiFunction;
 		BigInteger toModulo;
-		
+
 		do {
 			toModulo = publicKey.multiply(privateKey);
 			privateKey = privateKey.subtract(BigInteger.ONE);
 			if (privateKey.equals(BigInteger.ONE)) {
-				throw new ArithmeticException("Wrong public key or phi function to private key determine.");
+				throw new ArithmeticException(
+						"Wrong public key or phi function to private key determine.");
 			}
-			
+
 		} while (!toModulo.mod(phiFunction).equals(BigInteger.ONE));
 		return privateKey;
 	}

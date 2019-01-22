@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PrimeNumberGenerator {
 	
-	private static final int MINIMUM_BITS = 8;
+	private static final int MINIMUM_BITS = 16;
 	private static final int BITS_DIFFERENCE = 3;
 	
 	public List<BigInteger> getTwoRandomBigPrimes( int maxBits ) {

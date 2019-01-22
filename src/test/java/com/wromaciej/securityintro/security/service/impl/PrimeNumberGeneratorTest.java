@@ -23,7 +23,7 @@ public class PrimeNumberGeneratorTest {
 	public void shouldGenerateJustPrimeNumbers() {
 		// given
 		// when
-		List<BigInteger> primes = generator.getTwoRandomBigPrimes(16);
+		List<BigInteger> primes = generator.getTwoRandomBigPrimes(32);
 		// then
 		assertThat(primes.stream().allMatch(number -> number.isProbablePrime(1)), is(true));
 	}
@@ -32,7 +32,7 @@ public class PrimeNumberGeneratorTest {
 	public void shouldGenerateExactTwoNumbers() {
 		// given
 		// when
-		List<BigInteger> primes = generator.getTwoRandomBigPrimes(16);
+		List<BigInteger> primes = generator.getTwoRandomBigPrimes(32);
 		// then
 		assertThat(primes.size(), is(2));
 	}
@@ -48,20 +48,20 @@ public class PrimeNumberGeneratorTest {
 	}
 
 	@Test
-	public void shouldGenerateRandomNumbersFor8Bits() {
+	public void shouldGenerateRandomNumbersFor16Bits() {
 		// given
 		// when
-		List<BigInteger> primes = generator.getTwoRandomBigPrimes(8);
+		List<BigInteger> primes = generator.getTwoRandomBigPrimes(16);
 		// then
 		assertThat(primes.stream().allMatch(number -> number.isProbablePrime(1)), is(true));
 	}
 	
 	@Test
 	(expected = ArithmeticException.class)
-	public void shouldThrowExceptionForLessThan8Bits() {
+	public void shouldThrowExceptionForLessThan16Bits() {
 		// given
 		// when
-		List<BigInteger> primes = generator.getTwoRandomBigPrimes(7);
+		List<BigInteger> primes = generator.getTwoRandomBigPrimes(15);
 		// then
 		//throw exception
 	}
