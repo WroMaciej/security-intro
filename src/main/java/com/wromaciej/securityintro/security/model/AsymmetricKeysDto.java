@@ -33,6 +33,14 @@ public class AsymmetricKeysDto {
 	public BigInteger getModulus() {
 		return modulus;
 	}
+
+	@Override
+	public String toString() {
+		return "AsymmetricKeysDto [publicKey=" + publicKey + ", privateKey=" + privateKey
+				+ ", modulus=" + modulus + "]";
+	}
+	
+	
 	
 	
 	

@@ -1,52 +1,59 @@
 package com.wromaciej.securityintro.security.service.impl;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class PrimeNumberGenerator {
-
-	public BigInteger getMaximalPrime( int maxBits ) {
-		BigInteger maxNumber = maxValueForGivenBits(maxBits);
-		
-		while (!isPrime(maxNumber)) {
-			maxNumber.subtract(BigInteger.valueOf(2L));
+	
+	private static final int MINIMUM_BITS = 8;
+	private static final int BITS_DIFFERENCE = 3;
+	
+	public List<BigInteger> getTwoRandomBigPrimes( int maxBits ) {
+		if (maxBits < MINIMUM_BITS) {
+			throw new ArithmeticException("At least " + MINIMUM_BITS + " bits expected.");
 		}
-		
-		return maxNumber;
-	}
-	
-	
-	
-	public List<BigInteger> getTwoRandomBigPrimes( int maxBits){
-		if (maxBits < 4) {
-			throw new ArithmeticException("At least 4 bits expected.");
-		}
-		
 		List<BigInteger> primes = new ArrayList<>();
-		
-		BigInteger upperPrime = getMaximalPrime(maxBits);
-		BigInteger lowerPrime = upperPrime;
-		int actualBitsForLowerPrime = maxBits - 1;
-		
-		while(lowerPrime.equals(upperPrime)) {
-			lowerPrime = getMaximalPrime(actualBitsForLowerPrime);
-			actualBitsForLowerPrime --;
-		}
+		BigInteger upperPrime = getDifferentRandomPrime(null, maxBits - BITS_DIFFERENCE, maxBits);
+		BigInteger lowerPrime = getDifferentRandomPrime(upperPrime, maxBits - 2*BITS_DIFFERENCE, maxBits - BITS_DIFFERENCE);
 		primes.add(upperPrime);
 		primes.add(lowerPrime);
-		
+
 		return primes;
 	}
+
+
+	private BigInteger getDifferentRandomPrime( BigInteger differentThan, int minBits, int maxBits ) {
+		BigInteger maxNumber = maxValueForGivenBits(maxBits);
+		BigInteger minNumber = maxValueForGivenBits(minBits);
+		BigInteger range = maxNumber.subtract(minNumber);
+		
+		BigInteger randomNumber;
+		Random random = new Random();
+		BigDecimal randomToAdd;
+		BigDecimal randomDouble;
+		
+		do {
+			randomDouble = new BigDecimal(random.nextDouble());
+			randomToAdd = new BigDecimal(range).multiply(randomDouble);
+			randomNumber = minNumber.add(randomToAdd.toBigInteger());
+			
+		} while (randomNumber.equals(differentThan) || !randomNumber.isProbablePrime(1));
+
+		return randomNumber;
+	}
+
 	
-	public boolean isPrime(BigInteger number){
+	public boolean isPrime( BigInteger number ) {
 		return number.isProbablePrime(1);
 	}
 
-	public BigInteger maxValueForGivenBits( int bits ) {
+	private BigInteger maxValueForGivenBits( int bits ) {
 		BigInteger maxNumber = BigInteger.ONE;
 		for (int bit = 1; bit <= bits; bit++) {
 			maxNumber = maxNumber.multiply(BigInteger.valueOf(2L));

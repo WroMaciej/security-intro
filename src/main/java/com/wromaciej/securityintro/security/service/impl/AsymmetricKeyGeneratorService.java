@@ -1,6 +1,5 @@
 package com.wromaciej.securityintro.security.service.impl;
 
-import java.io.ObjectInputStream.GetField;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
