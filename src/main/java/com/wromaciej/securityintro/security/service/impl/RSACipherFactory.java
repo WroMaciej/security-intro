@@ -3,7 +3,6 @@ package com.wromaciej.securityintro.security.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.wromaciej.securityintro.security.model.AsymmetricKeysDto;
 import com.wromaciej.securityintro.security.model.RSAKeyDto;
 import com.wromaciej.securityintro.security.service.KeyGeneratorService;
 

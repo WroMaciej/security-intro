@@ -1,5 +1,7 @@
 package com.wromaciej.securityintro.security.service.impl;
 
+import java.math.BigInteger;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +17,29 @@ import com.wromaciej.securityintro.security.service.KeyGeneratorService;
 public class RSAKeyGeneratorServiceTest {
 	
 	@Autowired
-	KeyGeneratorService<RSAKeyDto> keyGenerator;
+	RSAKeyGeneratorService keyGenerator;
+	
 	
 	@Test
 	public void shouldGenerateRandomKey() {
 		//given
 		//when
+		RSAKeyDto key = keyGenerator.getRandomKey(64);
+		//then
+		System.out.println(key);
+	}
+	
+	@Test(timeout = 10000L)
+	public void shouldGenerate32BitKeyIn10Seconds() {
+		//given
+		//when
 		RSAKeyDto key = keyGenerator.getRandomKey(32);
 		//then
 		System.out.println(key);
-	
-		
-		
 	}
+	
+
+	
+	
 
 }
