@@ -1,11 +1,11 @@
 package com.wromaciej.securityintro.security.service;
 
-import com.wromaciej.securityintro.security.model.CipherDto;
+import com.wromaciej.securityintro.security.model.KeyDto;
 
 public interface CipherService <T, E> {
 	
-	E toEncrypted(CipherDto cipherDto, T decrypted);
+	E toEncrypted(KeyDto keyDto, T decrypted);
 	
-	T toDecrypted(CipherDto cipherDto, E encrypted);
+	T toDecrypted(KeyDto keyDto, E encrypted);
 
 }

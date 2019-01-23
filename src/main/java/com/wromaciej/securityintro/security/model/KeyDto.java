@@ -1,10 +1,10 @@
 package com.wromaciej.securityintro.security.model;
 
-public abstract class CipherDto {
+public abstract class KeyDto {
 	
 	protected final String name;
 
-	public CipherDto(String name) {
+	public KeyDto(String name) {
 		super();
 		this.name = name;
 	}

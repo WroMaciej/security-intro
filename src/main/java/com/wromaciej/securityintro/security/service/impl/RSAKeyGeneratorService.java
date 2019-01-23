@@ -10,21 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wromaciej.securityintro.security.model.AsymmetricKeysDto;
+import com.wromaciej.securityintro.security.model.RSAKeyDto;
 import com.wromaciej.securityintro.security.service.KeyGeneratorService;
 
 @Service
-public class AsymmetricKeyGeneratorService implements KeyGeneratorService<AsymmetricKeysDto> {
+public class RSAKeyGeneratorService implements KeyGeneratorService<RSAKeyDto> {
 
 	private final PrimeNumberGenerator primeNumberGenerator;
 
-	public AsymmetricKeyGeneratorService(
+	public RSAKeyGeneratorService(
 			@Autowired PrimeNumberGenerator primeNumberGenerator) {
 		super();
 		this.primeNumberGenerator = primeNumberGenerator;
 	}
 
 	@Override
-	public AsymmetricKeysDto getRandomKey( int keyBitLength ) {
+	public RSAKeyDto getRandomKey( int keyBitLength ) {
 		List<BigInteger> primes = new ArrayList<>();
 		
 		try {
@@ -49,7 +50,7 @@ public class AsymmetricKeyGeneratorService implements KeyGeneratorService<Asymme
 
 		BigInteger privateKey = getPrivateKey(publicKey, phiFunction);
 
-		return new AsymmetricKeysDto(publicKey, privateKey, modulus);
+		return new RSAKeyDto("RSA", publicKey, privateKey, modulus);
 	}
 
 	private BigInteger getRandomCoprimeNumber( BigInteger moreThan, BigInteger lessThan ) {
