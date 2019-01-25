@@ -1,6 +1,8 @@
 package com.wromaciej.securityintro.security.service.impl;
 
-import java.math.BigInteger;
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
+import java.util.Random;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.wromaciej.securityintro.security.model.AsymmetricKeysDto;
 import com.wromaciej.securityintro.security.model.RSAKeyDto;
-import com.wromaciej.securityintro.security.service.KeyGeneratorService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,13 +29,14 @@ public class RSAKeyGeneratorServiceTest {
 		System.out.println(key);
 	}
 	
-	@Test(timeout = 10000L)
-	public void shouldGenerate32BitKeyIn10Seconds() {
+	@Test(timeout = 5000L)
+	public void shouldGenerate256BitKeyIn5seconds() {
 		//given
 		//when
-		RSAKeyDto key = keyGenerator.getRandomKey(32);
+		RSAKeyDto key = keyGenerator.getRandomKey(256);
 		//then
 		System.out.println(key);
+
 	}
 	
 

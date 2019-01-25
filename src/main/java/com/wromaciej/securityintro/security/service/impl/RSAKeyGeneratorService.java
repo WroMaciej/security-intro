@@ -47,59 +47,51 @@ public class RSAKeyGeneratorService implements KeyGeneratorService<RSAKeyDto> {
 	}
 
 	private BigInteger generatePublicKey( BigInteger modulus, BigInteger phiFunction ) {
-		System.out.println("modulus: " + modulus + " phi: " + phiFunction);
 
 		BigInteger publicKey;
 		do {
 			publicKey = generateRandomOddNumber(BigInteger.ONE, modulus);
 		} while (!publicKey.gcd(phiFunction).equals(BigInteger.ONE));
 
-		System.out.println("pk calculated");
 		return publicKey;
-
 	}
 
 	private BigInteger generatePrivateKey( BigInteger publicKey, BigInteger phiFunction ) {
-		System.out.println("pk: " + publicKey + " phi: " + phiFunction);
 
 		BigInteger privateKey = BigInteger.ZERO;
-		BigInteger u = BigInteger.ONE;
-		BigInteger w = publicKey;
-		BigInteger z = phiFunction;
+		BigInteger parameter1 = BigInteger.ONE;
+		BigInteger parameter2 = publicKey;
+		BigInteger parameter3 = phiFunction;
 
 		BigInteger multiplification;
 
-		BigInteger temp;
+		BigInteger temporaryNumber;
 
 		do {
-			if (w.compareTo(z) < 0) {
-				temp = new BigInteger(privateKey.toString());
-				privateKey = new BigInteger(u.toString());
-				u = new BigInteger(temp.toString());
+			if (parameter2.compareTo(parameter3) < 0) {
+				temporaryNumber = new BigInteger(privateKey.toString());
+				privateKey = new BigInteger(parameter1.toString());
+				parameter1 = new BigInteger(temporaryNumber.toString());
 
-				temp = new BigInteger(w.toString());
-				w = new BigInteger(z.toString());
-				z = new BigInteger(temp.toString());
+				temporaryNumber = new BigInteger(parameter2.toString());
+				parameter2 = new BigInteger(parameter3.toString());
+				parameter3 = new BigInteger(temporaryNumber.toString());
 			}
-			multiplification = w.divide(z);
+			multiplification = parameter2.divide(parameter3);
+			parameter1 = parameter1.subtract(multiplification.multiply(privateKey));
+			parameter2 = parameter2.subtract(multiplification.multiply(parameter3));
 
-			u = u.subtract(multiplification.multiply(privateKey));
+		} while (!parameter2.equals(BigInteger.ZERO));
 
-			w = w.subtract(multiplification.multiply(z));
-
-		} while (!w.equals(BigInteger.ZERO));
-		
-		if (!z.equals(BigInteger.ONE)) {
+		if (!parameter3.equals(BigInteger.ONE)) {
 			throw new ArithmeticException(
 					"Wrong public key or phi function to private key determine.");
 		}
-		
+
 		if (privateKey.compareTo(BigInteger.ZERO) < 0) {
 			privateKey = privateKey.add(phiFunction);
 		}
-		
 
-		System.out.println("privKey calculated");
 		return privateKey;
 
 	}
@@ -122,7 +114,9 @@ public class RSAKeyGeneratorService implements KeyGeneratorService<RSAKeyDto> {
 			randomNumber = minimum.add(randomToAdd.toBigInteger());
 
 		} while (randomNumber.mod(BigInteger.valueOf(2L)).equals(BigInteger.valueOf(0L)));
+		
 
+		
 		return randomNumber;
 	}
 
