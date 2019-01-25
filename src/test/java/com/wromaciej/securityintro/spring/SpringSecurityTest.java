@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -43,10 +44,7 @@ public class SpringSecurityTest {
 		// then
 		assertThat(hashedPassword,
 				passwordEncoder.matches(passwordArray.toString(), hashedPassword), is(true));
-		assertThat(hashedPassword,
-				passwordEncoder.matches(passwordArray.toString(),
-						"$2a$10$iJn.LdyIdFFAlb2j0NYczOQUjswYWZfFoWRHlwiZ6cwliuAgnM002"),
-				is(true));
+		
 	}
 
 	@Test
@@ -70,30 +68,39 @@ public class SpringSecurityTest {
 	}
 
 	@Test
-	public void shouldEncryptAndDecryptObject() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException{
+	public void shouldEncryptAndDecryptObject() throws NoSuchAlgorithmException,
+			NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException,
+			IOException, ClassNotFoundException, BadPaddingException {
 		// given
-		
-		
-		
+
 		SimplePerson person = new SimplePerson("Benny Lava", 20);
-		
+
 		SecureRandom secureRandom = new SecureRandom();
 		byte[] key = new byte[16];
 		secureRandom.nextBytes(key);
 		SecretKey secretKey = new SecretKeySpec(key, "AES");
-		
+
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
 		SealedObject sealedPerson;
-		
-		//when
+
+		// when
 		sealedPerson = new SealedObject(person, cipher);
-		
+
 		System.out.println(person);
 		System.out.println(sealedPerson);
 
+		person.setName("changed");
+		person.setAge(30);
+
+		
+		cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		SimplePerson decryptedPerson = (SimplePerson) sealedPerson.getObject(cipher);
+		
+		System.out.println(person);
+		System.out.println(decryptedPerson);
+
 	}
-	
-	
+
 }
