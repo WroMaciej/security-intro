@@ -3,7 +3,10 @@ package com.wromaciej.securityintro.spring;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -44,7 +47,7 @@ public class SpringSecurityTest {
 		// then
 		assertThat(hashedPassword,
 				passwordEncoder.matches(passwordArray.toString(), hashedPassword), is(true));
-		
+
 	}
 
 	@Test
@@ -88,18 +91,37 @@ public class SpringSecurityTest {
 		// when
 		sealedPerson = new SealedObject(person, cipher);
 
-		System.out.println(person);
-		System.out.println(sealedPerson);
-
 		person.setName("changed");
 		person.setAge(30);
 
-		
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
 		SimplePerson decryptedPerson = (SimplePerson) sealedPerson.getObject(cipher);
 		
-		System.out.println(person);
-		System.out.println(decryptedPerson);
+		try {
+			FileOutputStream fileOut = new FileOutputStream(new File("simplePersonSealed.txt"));
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(sealedPerson);
+			out.close();
+			fileOut.close();
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void shouldSerializeObjectToFile() {
+		SimplePerson person = new SimplePerson("Benny Lava", 20);
+
+		try {
+			FileOutputStream fileOut = new FileOutputStream(new File("simplePerson1.txt"));
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(person);
+			out.close();
+			fileOut.close();
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
 
 	}
 
