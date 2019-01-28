@@ -4,15 +4,22 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Writer;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -31,6 +38,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.wromaciej.securityintro.security.model.SimplePerson;
 
 @RunWith(SpringRunner.class)
@@ -96,9 +106,10 @@ public class SpringSecurityTest {
 
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
 		SimplePerson decryptedPerson = (SimplePerson) sealedPerson.getObject(cipher);
-		
+
 		try {
-			FileOutputStream fileOut = new FileOutputStream(new File("simplePersonSealed.txt"));
+			FileOutputStream fileOut = new FileOutputStream(
+					new File("simplePersonSealed.txt"));
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(sealedPerson);
 			out.close();
@@ -107,6 +118,44 @@ public class SpringSecurityTest {
 			i.printStackTrace();
 		}
 
+	}
+
+	@Test
+	public void shouldSaveEncryptedAndRawObjectsAsJsonToFile()
+			throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+			IllegalBlockSizeException, IOException {
+		// given
+		Gson gsonFormat = new GsonBuilder().setPrettyPrinting().create();
+		Gson gson = new Gson();
+		
+
+		SecureRandom secureRandom = new SecureRandom();
+		byte[] key = new byte[16];
+		secureRandom.nextBytes(key);
+		SecretKey secretKey = new SecretKeySpec(key, "AES");
+
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+		
+		SimplePerson person = new SimplePerson("Benny Lava", 20);
+		SealedObject sealedPerson = new SealedObject(person, cipher);
+
+		// when
+		Writer writer = new FileWriter("simplePersonJSonRaw.json");
+		gson.toJson(person, writer);
+		writer.flush();
+		writer.close();
+		writer = new FileWriter("simplePersonJSonSealed.json");
+		gson.toJson(sealedPerson, writer);
+		writer.flush();
+		writer.close();
+		
+		SimplePerson readedRawObject = gson.fromJson(new FileReader("simplePersonJSonRaw.json"), SimplePerson.class);
+		SimplePerson readedSealedObject = gson.fromJson(new FileReader("simplePersonJSonRaw.json"), SimplePerson.class);
+		
+		//then
+		assertThat(readedRawObject, is(person));
+	
 	}
 
 	@Test
@@ -124,5 +173,31 @@ public class SpringSecurityTest {
 		}
 
 	}
+	
+	
+	@Test
+	public void shouldLoadKeysFromKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+		//given
+		char[] ksPassword = "mainPass".toCharArray();
+		String keyStoreType = "JKS";
+		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+		FileInputStream ksFile = new FileInputStream("newks.jks");
+		keyStore.load(ksFile, ksPassword);
+		
+//		try (FileOutputStream fos = new FileOutputStream("newks.jks")) {
+//		    keyStore.store(fos, ksPassword);
+//		}
+		
+		
+		
+		
+		
+		
+		
+	
+		
+		
+	}
+	
 
 }
