@@ -1,6 +1,6 @@
 package com.wromaciej.securityintro.spring;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -16,9 +16,13 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStore.Entry;
+import java.security.KeyStore.ProtectionParameter;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableEntryException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -127,7 +131,6 @@ public class SpringSecurityTest {
 		// given
 		Gson gsonFormat = new GsonBuilder().setPrettyPrinting().create();
 		Gson gson = new Gson();
-		
 
 		SecureRandom secureRandom = new SecureRandom();
 		byte[] key = new byte[16];
@@ -136,7 +139,7 @@ public class SpringSecurityTest {
 
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-		
+
 		SimplePerson person = new SimplePerson("Benny Lava", 20);
 		SealedObject sealedPerson = new SealedObject(person, cipher);
 
@@ -149,13 +152,15 @@ public class SpringSecurityTest {
 		gson.toJson(sealedPerson, writer);
 		writer.flush();
 		writer.close();
-		
-		SimplePerson readedRawObject = gson.fromJson(new FileReader("simplePersonJSonRaw.json"), SimplePerson.class);
-		SimplePerson readedSealedObject = gson.fromJson(new FileReader("simplePersonJSonRaw.json"), SimplePerson.class);
-		
-		//then
+
+		SimplePerson readedRawObject = gson
+				.fromJson(new FileReader("simplePersonJSonRaw.json"), SimplePerson.class);
+		SimplePerson readedSealedObject = gson
+				.fromJson(new FileReader("simplePersonJSonRaw.json"), SimplePerson.class);
+
+		// then
 		assertThat(readedRawObject, is(person));
-	
+
 	}
 
 	@Test
@@ -173,31 +178,54 @@ public class SpringSecurityTest {
 		}
 
 	}
-	
-	
+
 	@Test
-	public void shouldLoadKeysFromKeyStore() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-		//given
-		char[] ksPassword = "mainPass".toCharArray();
-		String keyStoreType = "JKS";
+	public void shouldLoadKeyFromKeyStoreAndUseItForCipher() throws KeyStoreException,
+			NoSuchAlgorithmException, CertificateException, IOException,
+			UnrecoverableEntryException, NoSuchPaddingException, InvalidKeyException,
+			IllegalBlockSizeException, ClassNotFoundException, BadPaddingException {
+		// given
+		char[] ksPassword = "qwerty".toCharArray();
+		String keyStoreType = "PKCS12";
 		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-		FileInputStream ksFile = new FileInputStream("newks.jks");
+		FileInputStream ksFile = new FileInputStream("ks3.pkcs12");
 		keyStore.load(ksFile, ksPassword);
-		
-//		try (FileOutputStream fos = new FileOutputStream("newks.jks")) {
-//		    keyStore.store(fos, ksPassword);
-//		}
-		
-		
-		
-		
-		
-		
-		
-	
-		
-		
+
+		char[] secretKeyPassword1 = "qwerty2".toCharArray();
+		String secretKeyAlias1 = "sec1";
+
+		Key secretKey1 = keyStore.getKey(secretKeyAlias1, secretKeyPassword1);
+
+		Gson gson = new Gson();
+
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey1);
+
+		SimplePerson person = new SimplePerson("Benny Lava", 20);
+		SealedObject sealedPerson = new SealedObject(person, cipher);
+
+		Writer writer = new FileWriter("rawPerson.json");
+		gson.toJson(person, writer);
+		writer.flush();
+		writer.close();
+		writer = new FileWriter("sealedPerson.json");
+		gson.toJson(sealedPerson, writer);
+		writer.flush();
+		writer.close();
+
+		// when
+		SimplePerson readedRawObject = gson.fromJson(new FileReader("rawPerson.json"),
+				SimplePerson.class);
+		SealedObject readedSealedObject = gson.fromJson(new FileReader("sealedPerson.json"),
+				SealedObject.class);
+		cipher.init(Cipher.DECRYPT_MODE, secretKey1);
+		SimplePerson decryptedPerson = (SimplePerson) sealedPerson.getObject(cipher);
+
+		// then
+		assertThat(readedRawObject, is(person));
+		assertThat(readedSealedObject, not(person));
+		assertThat(decryptedPerson, is(person));
+
 	}
-	
 
 }
