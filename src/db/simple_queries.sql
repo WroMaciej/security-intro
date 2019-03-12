@@ -6,4 +6,4 @@ insert into users(login) values ("Adam4");
 
 UPDATE users SET card_id = aes_encrypt(card_id, salt) WHERE id<3;
 
-SELECT id, login, salt, cast(aes_decrypt(card_id, salt) as char(128)) from users where id<3;
+SELECT id, login, salt, cast(aes_decrypt(card_id, salt) as char(128)) as "decoded" from users;

@@ -1,6 +1,7 @@
 package com.wromaciej.securityintro.spring;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -16,13 +17,10 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.KeyStore.Entry;
-import java.security.KeyStore.ProtectionParameter;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableEntryException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -44,13 +42,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.wromaciej.securityintro.security.model.SimplePerson;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CryptographyTest {
-
+	
 	@Test
 	public void shouldHashPassWithBCrypt() {
 		// given
@@ -59,6 +56,7 @@ public class CryptographyTest {
 		// when
 		String hashedPassword = passwordEncoder.encode(passwordArray.toString());
 		// then
+		
 		assertThat(hashedPassword,
 				passwordEncoder.matches(passwordArray.toString(), hashedPassword), is(true));
 
@@ -92,6 +90,8 @@ public class CryptographyTest {
 
 		SimplePerson person = new SimplePerson("Benny Lava", 20);
 
+				
+		
 		SecureRandom secureRandom = new SecureRandom();
 		byte[] key = new byte[16];
 		secureRandom.nextBytes(key);
@@ -110,6 +110,7 @@ public class CryptographyTest {
 
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
 		SimplePerson decryptedPerson = (SimplePerson) sealedPerson.getObject(cipher);
+		
 
 		try {
 			FileOutputStream fileOut = new FileOutputStream(
@@ -133,7 +134,7 @@ public class CryptographyTest {
 		Gson gson = new Gson();
 
 		SecureRandom secureRandom = new SecureRandom();
-		byte[] key = new byte[16];
+		byte[] key = new byte[32];
 		secureRandom.nextBytes(key);
 		SecretKey secretKey = new SecretKeySpec(key, "AES");
 
@@ -220,7 +221,9 @@ public class CryptographyTest {
 				SealedObject.class);
 		cipher.init(Cipher.DECRYPT_MODE, secretKey1);
 		SimplePerson decryptedPerson = (SimplePerson) sealedPerson.getObject(cipher);
-
+		
+		
+		
 		// then
 		assertThat(readedRawObject, is(person));
 		assertThat(readedSealedObject, not(person));
