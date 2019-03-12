@@ -56,7 +56,6 @@ public class CryptographyTest {
 		// when
 		String hashedPassword = passwordEncoder.encode(passwordArray.toString());
 		// then
-		
 		assertThat(hashedPassword,
 				passwordEncoder.matches(passwordArray.toString(), hashedPassword), is(true));
 
