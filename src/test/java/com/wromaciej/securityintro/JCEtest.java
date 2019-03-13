@@ -25,7 +25,7 @@ public class JCEtest {
 
 	}
 
-	static class MutualClass implements Cloneable {
+	static class MutualClass {
 		private int mutualValue;
 
 		public MutualClass(int mutualValue) {
@@ -33,14 +33,15 @@ public class JCEtest {
 			this.mutualValue = mutualValue;
 		}
 		
-		
+		public MutualClass(MutualClass mutual) {
+			super();
+			this.mutualValue = mutual.mutualValue;
+		}
 
 		@Override
 		public String toString() {
 			return "MutualClass [mutualValue=" + mutualValue + "]";
 		}
-
-
 
 		public int getMutualValue() {
 			return mutualValue;
@@ -76,18 +77,9 @@ public class JCEtest {
 			return true;
 		}
 
-
-
-		@Override
-		protected Object clone() throws CloneNotSupportedException {
-			return super.clone();
-		}
-		
-		
-
 	}
 
-	static class ValuedClass implements Comparable<ValuedClass>, Cloneable {
+	static class ValuedClass implements Comparable<ValuedClass> {
 		int value;
 		static int objectsCreated;
 		int objectNumber = objectsCreated + 1;
@@ -106,6 +98,12 @@ public class JCEtest {
 			this.value = value;
 			objectsCreated++;
 			mutualObject = new MutualClass(value);
+		}
+
+		public ValuedClass(ValuedClass original) {
+			this.mutualObject = new MutualClass(original.getMutualObject());
+			this.value = original.value;
+			this.objectNumber = original.objectNumber;
 		}
 
 		@Override
@@ -155,11 +153,6 @@ public class JCEtest {
 		public String toString() {
 			return "ValuedClass [value=" + value + ", objectNumber=" + objectNumber
 					+ ", mutualObject=" + mutualObject + "]";
-		}
-
-		@Override
-		protected ValuedClass clone() throws CloneNotSupportedException {
-			return (ValuedClass) super.clone();
 		}
 
 	}
@@ -219,7 +212,7 @@ public class JCEtest {
 		// given
 		ValuedClass original = new ValuedClass(8);
 		// when
-		ValuedClass copy = original.clone();
+		ValuedClass copy = new ValuedClass(original);
 		// then
 		assertThat(copy, is(original));
 		original.mutualObject.mutualValue = 0;
