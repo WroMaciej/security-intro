@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.sound.midi.VoiceStatus;
+
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -22,9 +24,6 @@ public class JCEtest {
 		int maxKeySize = javax.crypto.Cipher.getMaxAllowedKeyLength("AES");
 		// then
 		assertThat(maxKeySize, greaterThan(1024));
-
 	}
-
-
-
+	
 }
