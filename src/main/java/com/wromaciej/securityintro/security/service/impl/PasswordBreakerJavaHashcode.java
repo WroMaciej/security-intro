@@ -2,6 +2,7 @@ package com.wromaciej.securityintro.security.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.wromaciej.securityintro.security.service.PasswordBreaker;
 
@@ -63,7 +64,7 @@ public class PasswordBreakerJavaHashcode implements PasswordBreaker {
 
 	}
 
-	private List<String> guessByBruteForce( String hash, int passLengthLimit ) throws Exception {
+	private List<String> guessAllByBruteForce( String hash, int passLengthLimit ) throws Exception {
 		char[] testedPass;
 		int length;
 		
@@ -96,7 +97,33 @@ public class PasswordBreakerJavaHashcode implements PasswordBreaker {
 
 	@Override
 	public List<String> findAllPossibilities( String hash, int passLengthLimit ) throws Exception {
-		return guessByBruteForce(hash, passLengthLimit);
+		return guessAllByBruteForce(hash, passLengthLimit);
+	}
+
+	@Override
+	public Optional<String> findFirst( String hash, int passLengthLimit ) {
+		char[] testedPass;
+		int length;
+
+		for (length = 1; length <= passLengthLimit; length++) {
+			testedPass = fullfillChars(charsToBruteForce.charAt(0), length);
+
+			while (true) {
+				String hashToTest = getPassHash(String.valueOf(testedPass));
+				if (hash.equals(hashToTest)) {
+					return Optional.of(String.valueOf(testedPass));
+				}
+					try {
+						testedPass = nextPossibility(testedPass);
+					} catch (Exception e) {
+						break;
+					}
+			}
+
+		}
+		
+		return Optional.empty();
+		
 	}
 
 }
