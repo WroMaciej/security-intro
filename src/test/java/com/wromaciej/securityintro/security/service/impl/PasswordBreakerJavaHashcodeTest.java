@@ -2,14 +2,10 @@ package com.wromaciej.securityintro.security.service.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -40,8 +36,11 @@ public class PasswordBreakerJavaHashcodeTest {
 		PasswordBreaker passwordBreaker = new PasswordBreakerJavaHashcode();
 		// when
 		Optional<String> guessed = passwordBreaker.findFirst(passwordHash, maxLength);
+		List<String> allPossibilities = passwordBreaker.findAllPossibilities(passwordHash, maxLength);
 		// then
 		assertThat(guessed.get(), Matchers.is(String.valueOf(rawPassword)));
+		assertThat(allPossibilities, Matchers.hasItem(String.valueOf(rawPassword)));
+		assertThat(allPossibilities.size(), Matchers.greaterThan(1));
 	}
 
 	@Test
