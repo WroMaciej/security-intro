@@ -76,53 +76,6 @@ public class PasswordBreakerJavaHashcodeTest {
 		assertThat(guessed, Matchers.hasItem(String.valueOf(rawPassword)));
 	}
 
-	static class MutableInt implements Observer {
-		int value;
 
-		public MutableInt(int value) {
-			this.value = value;
-		}
-
-		@Override
-		public String toString() {
-			return "MutableInt [value=" + value + "]";
-		}
-
-		@Override
-		public void update( Observable o, Object arg ) {
-			int oldValue = value;
-			int newValue = (int) arg;
-			value = newValue;
-		}
-
-	}
-
-	static class MutablesChanger extends Observable {
-		public void changeAllValues( int commonValue ) {
-			setChanged();
-			notifyObservers(commonValue);
-		}
-	}
-
-	@Test
-	public void shouldChangeAllObservers() {
-		// given
-		MutableInt mutableInt1 = new MutableInt(1);
-		MutableInt mutableInt2 = new MutableInt(2);
-		MutableInt mutableInt3 = new MutableInt(3);
-		List<MutableInt> list = new ArrayList<>();
-		list.add(mutableInt1);
-		list.add(mutableInt2);
-		list.add(mutableInt3);
-		MutablesChanger mutablesChanger = new MutablesChanger();
-		list.forEach(mutableInt -> mutablesChanger.addObserver(mutableInt));
-		// when
-		final Integer commonValue = Integer.valueOf(99);
-		mutablesChanger.changeAllValues(commonValue);
-		// then
-		Predicate<MutableInt> hasCommonValue = 
-				mutable -> mutable.value == commonValue.intValue();
-		assertTrue(list.stream().allMatch(hasCommonValue));
-	}
 
 }
